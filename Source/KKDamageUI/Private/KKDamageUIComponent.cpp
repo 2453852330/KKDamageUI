@@ -5,6 +5,9 @@
 
 #include "DamageUIBase.h"
 #include "Engine/UserInterfaceSettings.h"
+#include "Engine/World.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/Engine.h"
 
 // Sets default values for this component's properties
 UKKDamageUIComponent::UKKDamageUIComponent()
@@ -18,7 +21,17 @@ UKKDamageUIComponent::UKKDamageUIComponent()
 void UKKDamageUIComponent::UpdateDamageUI(FVector Pos)
 {
 	FVector2D ViewPortSize;
-	GetWorld()->GetGameViewport()->GetViewportSize(ViewPortSize);
+	UWorld * World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+	UGameViewportClient * ViewportClient = World->GetGameViewport();
+	if (!ViewportClient)
+	{
+		return;
+	}
+	ViewportClient->GetViewportSize(ViewPortSize);
 	FIntPoint Size(FMath::TruncToInt(ViewPortSize.X),FMath::TruncToInt(ViewPortSize.Y));
 	
 	float DPIScale = GetDefault<UUserInterfaceSettings>(UUserInterfaceSettings::StaticClass())->GetDPIScaleBasedOnSize(Size);
@@ -58,7 +71,7 @@ FVector UKKDamageUIComponent::GetRandomVector(const FVector & Min,const FVector 
 
 FLinearColor UKKDamageUIComponent::GetRandomColorFromList()
 {
-	FLinearColor Tmp(1,1,1);
+	FLinearColor Tmp(1,1,1,1);
 	if (RandomColorList.Num())
 	{
 		Tmp = RandomColorList[FMath::RandRange(0,RandomColorList.Num() -1 )];
@@ -68,7 +81,7 @@ FLinearColor UKKDamageUIComponent::GetRandomColorFromList()
 
 FLinearColor UKKDamageUIComponent::GetColorFromDamage(float DamageValue)
 {
-	FLinearColor Tmp(1,1,1);
+	FLinearColor Tmp(1,1,1,1);
 	for (TTuple<float,FLinearColor> it : DamageColorMapList)
 	{
 		if (DamageValue > it.Key)
@@ -81,6 +94,11 @@ FLinearColor UKKDamageUIComponent::GetColorFromDamage(float DamageValue)
 
 void UKKDamageUIComponent::KKAddDamageUI(FVector Pos, float DamageValue,bool bMultiCast)
 {
+	if (!SpawnedClass && GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,TEXT("Please Set The DamageUI Class In KKDamageUIComponent"));
+		return;
+	}
 	// 必须开启组件的Replicated才能正常使用MultiCast
 	if (bMultiCast)
 	{

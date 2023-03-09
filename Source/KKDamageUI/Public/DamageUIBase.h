@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DamageUIBase.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class KKDAMAGEUI_API ADamageUIBase : public AActor
 {
 	GENERATED_BODY()

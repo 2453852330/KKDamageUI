@@ -18,7 +18,8 @@
 		{
 			"Name": "KKDamageUI",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PreDefault"
 		}
-	]
+	],
+	"SupportedTargetPlatforms": ["Win64","Win32"]
 }
