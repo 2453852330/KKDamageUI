@@ -7,6 +7,8 @@
 #include "KKDamageUIComponent.generated.h"
 
 
+class ADamageUIBase;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class KKDAMAGEUI_API UKKDamageUIComponent : public UActorComponent
 {
@@ -57,10 +59,10 @@ public:
 
 private:
 	UPROPERTY()
-	TArray<AActor * > DamageUIList;
+	TArray<ADamageUIBase * > DamageUIList;
 	
 	void KKSpawnAndAddDamageUIActor(FVector Pos,float DamageValue);
-	void UpdateDamageUI(FVector Pos);
+	void UpdateDamageUI();
 	FVector GetRandomVector(const FVector & Min,const FVector & Max);
 	FLinearColor GetRandomColorFromList();
 	FLinearColor GetColorFromDamage(float DamageValue);

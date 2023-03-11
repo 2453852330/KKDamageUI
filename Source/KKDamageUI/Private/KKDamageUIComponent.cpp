@@ -18,7 +18,7 @@ UKKDamageUIComponent::UKKDamageUIComponent()
 	// ...
 }
 
-void UKKDamageUIComponent::UpdateDamageUI(FVector Pos)
+void UKKDamageUIComponent::UpdateDamageUI()
 {
 	FVector2D ViewPortSize;
 	UWorld * World = GetWorld();
@@ -35,28 +35,23 @@ void UKKDamageUIComponent::UpdateDamageUI(FVector Pos)
 	FIntPoint Size(FMath::TruncToInt(ViewPortSize.X),FMath::TruncToInt(ViewPortSize.Y));
 	
 	float DPIScale = GetDefault<UUserInterfaceSettings>(UUserInterfaceSettings::StaticClass())->GetDPIScaleBasedOnSize(Size);
-
-	FVector TmpRootOffset;
-	FVector TmpVerticalOffset ;
 	
-	TArray<AActor *> InValidList;
+	TArray<ADamageUIBase *> InValidList;
 	int i = 0;
-	for (AActor * it : DamageUIList)
+	for (ADamageUIBase * it : DamageUIList)
 	{
 		if (!it)
 		{
 			InValidList.Add(it);
 			continue;
 		}
-		TmpRootOffset = bRandomRootOffset ?GetRandomVector(MinRootOffset,MaxRootOffset) :RootOffset;
-		TmpVerticalOffset = bRandomVerticalOffset ?GetRandomVector(MinVerticalOffset,MaxVerticalOffset) :VerticalOffset;
-		it->SetActorLocation(Pos + TmpRootOffset + i * DPIScale * TmpVerticalOffset);
+		it->SetActorLocation(it->RootPos +it->RandomRootOffset + i * DPIScale * it->RandomVerticalOffset);
 		i++;
 	}
 
-	for (AActor * it : InValidList)
+	for (ADamageUIBase * it : InValidList)
 	{
-		DamageUIList.Remove(it);
+		DamageUIList.RemoveSwap(it);
 	}
 }
 
@@ -92,6 +87,7 @@ FLinearColor UKKDamageUIComponent::GetColorFromDamage(float DamageValue)
 	return Tmp;
 }
 
+
 void UKKDamageUIComponent::KKAddDamageUI(FVector Pos, float DamageValue,bool bMultiCast)
 {
 	if (!SpawnedClass && GEngine)
@@ -100,14 +96,16 @@ void UKKDamageUIComponent::KKAddDamageUI(FVector Pos, float DamageValue,bool bMu
 		return;
 	}
 	// 必须开启组件的Replicated才能正常使用MultiCast
-	if (bMultiCast)
+	if (bMultiCast && !GetIsReplicated())
 	{
 		SetIsReplicated(true);
+	}
+	if (bMultiCast)
+	{
 		KKAddDamageUI_Multi(Pos,DamageValue);
 	}
 	else
 	{
-		SetIsReplicated(false);
 		KKAddDamageUI_Client(Pos,DamageValue);
 	}
 }
@@ -129,10 +127,13 @@ void UKKDamageUIComponent::KKSpawnAndAddDamageUIActor(FVector Pos,float DamageVa
 	ADamageUIBase * SpawnedActor = GetWorld()->SpawnActorDeferred<ADamageUIBase>(SpawnedClass,SpawnTransform,GetOwner());
 	SpawnedActor->DamageValue = DamageValue;
 	SpawnedActor->DamageColor = bRandomColor ? GetRandomColorFromList() : GetColorFromDamage(DamageValue);
+	SpawnedActor->RootPos = Pos;
+	SpawnedActor->RandomRootOffset = GetRandomVector(MinRootOffset,MaxRootOffset);
+	SpawnedActor->RandomVerticalOffset = GetRandomVector(MinVerticalOffset,MaxVerticalOffset);
 	SpawnedActor->FinishSpawning(SpawnTransform);
-
+	
 	DamageUIList.Insert(SpawnedActor,0);
-	UpdateDamageUI(Pos);
+	UpdateDamageUI();
 }
 
 

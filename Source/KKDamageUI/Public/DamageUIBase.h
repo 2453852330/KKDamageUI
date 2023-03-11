@@ -14,9 +14,14 @@ class KKDAMAGEUI_API ADamageUIBase : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADamageUIBase();
-
+	
+	
 	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
 	float DamageValue;
 	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
 	FLinearColor DamageColor;
+	
+	FVector RootPos;
+	FVector RandomRootOffset;
+	FVector RandomVerticalOffset;
 };
