@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright CYC 2023, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -16,9 +16,9 @@ public:
 	ADamageUIBase();
 	
 	
-	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
+	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true),Category=DamageUI)
 	float DamageValue;
-	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true))
+	UPROPERTY(BlueprintReadWrite,meta=(ExposeOnSpawn=true),Category=DamageUI)
 	FLinearColor DamageColor;
 	
 	FVector RootPos;

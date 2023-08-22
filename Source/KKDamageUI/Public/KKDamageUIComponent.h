@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright CYC 2023, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -49,7 +49,7 @@ public:
 	TMap<float,FLinearColor> DamageColorMapList;
 
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,Category="KKDamageUI")
 	void KKAddDamageUI(FVector Pos,float DamageValue,bool bMultiCast);
 
 	UFUNCTION(Client,Unreliable)
